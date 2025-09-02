@@ -15,6 +15,10 @@ WINDOW_HEIGHT = 600
 # Define what font and size we will use across the application
 FONT_NAME = "Arial"
 FONT_SIZE = 12
+OUTCOME_FONT_SIZE = 24
+TITLE_FONT_SIZE = 36
+DESC_FONT_SIZE = 18
+
 
 # Define the colors of different elements of the application
 COLOR_BACKGROUND = (30, 30, 30)  # Dark gray background
@@ -39,14 +43,30 @@ MINE_MAX = 20
 GRID_ROWS = 10
 GRID_COLS = 10
 CELL_SIZE = 40  # Size of each cell in pixels
-HELP_TEXT = "To select a cell, hover over it and left-click. If you want to place a flag hover over a cell and right-click. If you want to restart the game press R."
+CONTROLS_TEXT = "To select a cell, hover over it and left-click. If you want to place a flag hover over a cell and right-click. If you want to restart the game press R."
+WON_TEXT = "You won! Press 'R' to restart."
+LOST_TEXT = "You lost! Press 'R' to restart."
+TITLE = "Minesweeper"
+DESC_TEXT = "Clear the board without detonating any mines."
+NUM_MINES_TEXT = "Number of Mines(10-20):"
+START_BUTTON_LABEL = "Start Game"
+
+
 
 # Define the positioning of elements in the window in there x and y
 GRID_POS_X = 200
 GRID_POS_Y = 100
-HELP_TEXT_X = 100
-HELP_TEXT_Y = 525
+CONTROLS_TEXT_X = 100
+CONTROLS_TEXT_Y = 525
 FLAGS_REMAINING_X = 650
 FLAGS_REMAINING_Y = 75
 OUTCOME_X = 350
 OUTCOME_Y = 550
+TITLE_POS_X = WINDOW_WIDTH // 2
+TITLE_POS_Y = 100
+DESC_POS_X = WINDOW_WIDTH // 2
+DESC_POS_Y = 160
+MINES_TEXT_X = WINDOW_WIDTH // 2
+MINES_TEXT_Y = 220
+START_BUTTON_X = WINDOW_WIDTH // 2
+START_BUTTON_Y = 300
