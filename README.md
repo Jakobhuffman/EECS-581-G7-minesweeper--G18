@@ -17,5 +17,5 @@ python -m pip install pygame
 ~~~
 
 ## For Developers
-To view the specifications this game was built to, see the [Requirements Document](ADD_LINK_TO_REQUIREMENTS_DOC). <br>
-For an overview of the code's architecture, see the [Architecure Document](ADD_LINK_TO_ARCHITECTURE_DOC).
+To view the specifications this game was built to, see the [Requirements Document](<Documentation/Requirements Document.pdf>). <br>
+For an overview of the code's architecture, see the [Architecure Document](<Documentation/Architecture Document.pdf>).
