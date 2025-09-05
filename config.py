@@ -1,7 +1,5 @@
 # Config.py
 # Configuration of settings and other constants for the project
-# Input: N/A
-# Output: N/A
 # Author(s): Michael Buckendahl
 # Creation Date: 9/2/2025
 
