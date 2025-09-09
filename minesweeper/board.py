@@ -2,7 +2,7 @@
 # Contain the two main classes for the game:
 # 1. Board: Represents the game board and handles the logic for intializing the board, revealing cells, placing flags, and checking for wins/losses.
 # 2. Cell: Represents a single cell on the board, including its state (covered, uncovered, flagged) and the number of adjacent mines.
-# Authors: Michael Buckendahl
+# Authors: Michael Buckendahl, C. Cooper
 # Creation Date: 9/4/2025
 
 import config
@@ -68,5 +68,17 @@ class BoardGame:
     def reveal_all_mines(self):
         return
     
-    def handle_first_click(self, cell):
-        return
+    def handle_first_click(self, cell: Cell):
+        """Generates the minesweeper board such that the given cell is not a mine.
+
+        Args:
+            cell (Cell): The cell that was clicked on.
+        """
+        # Prevent this cell from being selected as a mine
+        cell.can_be_mine = False
+
+        # Mark that the first click has been handled
+        self.is_first_click = False
+
+        # Generate the board
+        self.init_board()
