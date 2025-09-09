@@ -15,6 +15,10 @@ This game also utilizes PyGame for its GUI. Once Python is installed, PyGame can
 ~~~
 python -m pip install pygame
 ~~~
+It additionally utilizes the PyGame extension Pygame GUI. Pygame GUI can be installed from the terminal using the command:
+~~~
+python -m pip install pygame_gui
+~~~
 
 ## For Developers
 To view the specifications this game was built to, see the [Requirements Document](<Documentation/Requirements Document.pdf>). <br>
