@@ -63,10 +63,19 @@ class BoardGame:
         return
 
     def check_win(self):
-        return
+        if self.phase != "playing":
+            return
+        for row in self.board:
+            for cell in row:
+                if not cell.is_mine and not cell.is_revealed:
+                    return
+        self.phase = "won"
 
     def reveal_all_mines(self):
-        return
+        for row in self.board:
+            for cell in row:
+                if cell.is_mine:
+                    cell.is_revealed = True
     
     def handle_first_click(self, cell: Cell):
         """Generates the minesweeper board such that the given cell is not a mine.
