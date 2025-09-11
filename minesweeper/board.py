@@ -63,18 +63,29 @@ class BoardGame:
         return
 
     def check_win(self):
+        """Check if the player has won (revealed all non-mine cells)"""
+
+        # Only check for a win if the game is being played
         if self.phase != "playing":
             return
+
+        # Iterate through each cell
         for row in self.board:
             for cell in row:
+                # If a cell is not a mine and has not been revealed the player has not won so return early
                 if not cell.is_mine and not cell.is_revealed:
                     return
+        # If this line is reached all non-mine cells have been revealed so player wins
         self.phase = "won"
-
+ 
     def reveal_all_mines(self):
+        """Used to reveal every mine (called when player loses)"""
+
+        # Iterate through every cell
         for row in self.board:
             for cell in row:
                 if cell.is_mine:
+                    # If cell is a mine reveal it
                     cell.is_revealed = True
     
     def handle_first_click(self, cell: Cell):
