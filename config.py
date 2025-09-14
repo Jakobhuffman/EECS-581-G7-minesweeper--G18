@@ -36,8 +36,8 @@ COLOR_8_NEAR_MINE = (0, 128, 128)  # Teal for cells with 8 adjacent mines
 COLOR_TEXT = (255, 255, 255)  # White for text
 
 # Define constants for the game
-MINE_MINES = 10
-MINE_MAX = 20
+MIN_MINES = 10
+MAX_MINES = 20
 GRID_ROWS = 10
 GRID_COLS = 10
 CELL_SIZE = 40  # Size of each cell in pixels
