@@ -5,6 +5,7 @@
 import pygame
 import pygame_gui
 from config import WINDOW_WIDTH, WINDOW_HEIGHT, FONT_NAME, FONT_SIZE, HELP_TEXT
+from board import BoardGame
 
 def draw_welcome(manager, screen, text_only=False):
     if text_only:
@@ -39,3 +40,6 @@ def draw_welcome(manager, screen, text_only=False):
         )
 
         return textbox, start_button
+    
+def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: BoardGame):
+    pass

@@ -23,7 +23,7 @@ class BoardGame:
         self.total_mines = 0
         self.used_flags = 0
         self.phase = 'ready'
-        self.flags_remaining = config.MINE_MAX
+        self.flags_remaining = config.MAX_MINES
         self.is_first_click = True
 
     def init_board(self):
