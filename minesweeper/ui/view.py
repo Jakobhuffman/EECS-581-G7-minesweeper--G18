@@ -4,8 +4,10 @@
 
 import pygame
 import pygame_gui
-from config import WINDOW_WIDTH, WINDOW_HEIGHT, FONT_NAME, FONT_SIZE, HELP_TEXT
-from board import BoardGame
+from config import WINDOW_WIDTH, WINDOW_HEIGHT, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y
+    
+from minesweeper.board import BoardGame
+
 
 def draw_welcome(manager, screen, text_only=False):
     if text_only:
@@ -40,6 +42,59 @@ def draw_welcome(manager, screen, text_only=False):
         )
 
         return textbox, start_button
-    
+
+from config import CELL_SIZE, COLOR_1_NEAR_MINE, COLOR_2_NEAR_MINE, COLOR_3_NEAR_MINE, COLOR_4_NEAR_MINE,COLOR_5_NEAR_MINE, COLOR_6_NEAR_MINE, COLOR_7_NEAR_MINE,COLOR_8_NEAR_MINE,COLOR_CELL_COVERED,COLOR_CELL_FLAGGED,COLOR_CELL_UNCOVERED,COLOR_CELL_MINE,COLOR_GRID_LINES
+
 def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: BoardGame):
-    pass
+    font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
+
+    for y, row in enumerate(board.board):
+        for x, cell in enumerate(row):
+            rect = pygame.Rect(
+                GRID_POS_X + x * CELL_SIZE,
+                GRID_POS_Y + y * CELL_SIZE,
+                CELL_SIZE,
+                CELL_SIZE
+            )
+
+            if not cell.is_revealed:
+                if cell.is_flag:
+                    pygame.draw.rect(screen, COLOR_CELL_FLAGGED, rect)
+                    flag_text = font.render("F", True, (0, 0, 0))
+                    screen.blit(flag_text, (rect.x + 5, rect.y + 2))
+                else:
+                    pygame.draw.rect(screen, COLOR_CELL_COVERED, rect)
+            else:
+                if cell.is_mine:
+                    pygame.draw.rect(screen, COLOR_CELL_MINE, rect)
+                    mine_text = font.render("M", True, (0, 0, 0))
+                    screen.blit(mine_text, (rect.x + 5, rect.y + 2))
+                elif cell.adjacent_mines > 0:
+                    pygame.draw.rect(screen, COLOR_CELL_UNCOVERED, rect)
+                    num_color = get_number_color(cell.adjacent_mines)
+                    num_text = font.render(str(cell.adjacent_mines), True, num_color)
+                    screen.blit(num_text, (rect.x + 5, rect.y + 2))
+                else:
+                    pygame.draw.rect(screen, COLOR_CELL_UNCOVERED, rect)
+
+            pygame.draw.rect(screen, COLOR_GRID_LINES, rect, 1)
+
+    # Flags remaining
+    flags_left = board.total_mines - board.used_flags
+    flags_text = font.render(f"Flags Left: {flags_left}", True, (255, 255, 255))
+    screen.blit(flags_text, (20, 20)) 
+
+    manager.draw_ui(screen)
+
+
+def get_number_color(number: int):
+    return {
+        1: COLOR_1_NEAR_MINE,
+        2: COLOR_2_NEAR_MINE,
+        3: COLOR_3_NEAR_MINE,
+        4: COLOR_4_NEAR_MINE,
+        5: COLOR_5_NEAR_MINE,
+        6: COLOR_6_NEAR_MINE,
+        7: COLOR_7_NEAR_MINE,
+        8: COLOR_8_NEAR_MINE,
+    }.get(number, (255, 255, 255))
