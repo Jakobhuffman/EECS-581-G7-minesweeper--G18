@@ -67,7 +67,7 @@ class BoardGame:
 
         if (0 <= relative_x <= config.GRID_COLS * config.CELL_SIZE) and ( 0 <= relative_y <= config.GRID_ROWS * config.CELL_SIZE): #is it on the board
             if self.is_first_click==True: #first click initialize board
-                self.handle_first_click(self.board[row][col])
+                self.handle_first_click(row,col)
                 print('First click:',row,col)
                 return
 
