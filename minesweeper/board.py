@@ -57,14 +57,13 @@ class BoardGame:
 
     def reveal(self, col, row):
         if self.is_first_click==True: #first click initialize board
-            self.handle_first_click(row,col)
+            self.handle_first_click(row, col)
             print('First click:',row,col)
-            return
 
         clicked_cell=self.board[row][col]
         print("Cell clicked:", row,col, "Mine?",clicked_cell.is_mine)
         if clicked_cell.is_mine:
-            self.phase="loss"
+            self.phase="lost"
             self.reveal_all_mines()
             return
         if clicked_cell.adjacent_mines > 0: #is a number
@@ -72,7 +71,6 @@ class BoardGame:
             clicked_cell.is_revealed=True
         else:
             self.flood_reveal(row, col)
-        return
 
     def flood_reveal(self, row,col):
         if not (0 <= row < config.GRID_ROWS and 0 <= col < config.GRID_COLS): #make sure the cell is in the grid
@@ -101,7 +99,7 @@ class BoardGame:
             return
 
         # Ensure click maps inside the grid
-        if not (0 <= click_pos_y < self.rows and 0 <= click_pos_x < self.cols):
+        if not (0 <= click_pos_y < config.GRID_ROWS and 0 <= click_pos_x < config.GRID_COLS):
             return
 
         # Access target cell
@@ -147,14 +145,33 @@ class BoardGame:
                     # If cell is a mine reveal it
                     cell.is_revealed = True
     
-    def handle_first_click(self, cell: Cell):
+    def handle_first_click(self, row: int, column: int):
         """Generates the minesweeper board such that the given cell is not a mine.
 
         Args:
             cell (Cell): The cell that was clicked on.
         """
-        # Prevent this cell from being selected as a mine
-        cell.can_be_mine = False
+
+        # Prevent this and adjacent cells from being selected as a mine
+        self.board[row][column].can_be_mine = False
+
+        if row+1 < config.GRID_ROWS:
+            self.board[row+1][column].can_be_mine = False
+        if row-1 >= 0:
+            self.board[row-1][column].can_be_mine = False
+        if column+1 < config.GRID_COLS:
+            self.board[row][column+1].can_be_mine = False
+        if column-1 >= 0:
+            self.board[row][column-1].can_be_mine = False
+        if row+1 < config.GRID_ROWS and column+1 < config.GRID_COLS:
+            self.board[row+1][column+1].can_be_mine = False
+        if row-1 >= 0 and column-1 >= 0:
+            self.board[row-1][column-1].can_be_mine = False
+        if row+1 < config.GRID_ROWS and column-1 >= 0:
+            self.board[row+1][column-1].can_be_mine = False
+        if row-1 >= 0 and column+1 < config.GRID_COLS:
+            self.board[row-1][column+1].can_be_mine = False
+
 
         # Mark that the first click has been handled
         self.is_first_click = False
