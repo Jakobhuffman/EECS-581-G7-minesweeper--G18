@@ -55,35 +55,23 @@ class BoardGame:
         if x-1 >= 0 and y+1 < config.GRID_COLS:
             self.board[x-1][y+1].adjacent_mines += 1
 
-    def reveal(self, pos,click_pos_x=None, click_pos_y=None):
-        if pos != None:# set variables
-            click_pos_x = pos[0]
-            click_pos_y = pos[1]
+    def reveal(self, col, row):
+        if self.is_first_click==True: #first click initialize board
+            self.handle_first_click(row,col)
+            print('First click:',row,col)
+            return
 
-        relative_x = click_pos_x - (config.GRID_POS_X)  # calc position in grid
-        relative_y = click_pos_y - (config.GRID_POS_Y)
-        col = relative_x // config.CELL_SIZE  # which column
-        row = relative_y // config.CELL_SIZE  # which row
-
-        if (0 <= relative_x <= config.GRID_COLS * config.CELL_SIZE) and ( 0 <= relative_y <= config.GRID_ROWS * config.CELL_SIZE): #is it on the board
-            if self.is_first_click==True: #first click initialize board
-                self.handle_first_click(row,col)
-                print('First click:',row,col)
-                return
-
-            clicked_cell=self.board[row][col]
-            print("Cell clicked:", row,col, "Mine?",clicked_cell.is_mine)
-            if clicked_cell.is_mine:
-                self.phase="loss"
-                self.reveal_all_mines()
-                return
-            if clicked_cell.adjacent_mines > 0: #is a number
-                print("Cell is number",row,col,":", clicked_cell.adjacent_mines)
-                clicked_cell.is_revealed=True
-            else:
-                self.flood_reveal(row, col)
+        clicked_cell=self.board[row][col]
+        print("Cell clicked:", row,col, "Mine?",clicked_cell.is_mine)
+        if clicked_cell.is_mine:
+            self.phase="loss"
+            self.reveal_all_mines()
+            return
+        if clicked_cell.adjacent_mines > 0: #is a number
+            print("Cell is number",row,col,":", clicked_cell.adjacent_mines)
+            clicked_cell.is_revealed=True
         else:
-            print("Not on Board")
+            self.flood_reveal(row, col)
         return
 
     def flood_reveal(self, row,col):
