@@ -55,9 +55,9 @@ class BoardGame:
         if x-1 >= 0 and y+1 < config.GRID_COLS:
             self.board[x-1][y+1].adjacent_mines += 1
 
-    def reveal(self, row, col):
+    def reveal(self, col, row):
         if self.is_first_click==True: #first click initialize board
-            self.handle_first_click(self.board[row][col])
+            self.handle_first_click(row,col)
             print('First click:',row,col)
             return
 
