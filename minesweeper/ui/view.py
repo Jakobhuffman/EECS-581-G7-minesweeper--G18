@@ -4,7 +4,7 @@
 
 import pygame
 import pygame_gui
-from config import WINDOW_WIDTH, WINDOW_HEIGHT, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y
+from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y
     
 from minesweeper.board import BoardGame
 
@@ -82,7 +82,7 @@ def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: Boa
     # Flags remaining
     flags_left = board.total_mines - board.used_flags
     flags_text = font.render(f"Flags Left: {flags_left}", True, (255, 255, 255))
-    screen.blit(flags_text, (20, 20)) 
+    screen.blit(flags_text, (FLAGS_REMAINING_X, FLAGS_REMAINING_Y)) 
 
     manager.draw_ui(screen)
 
