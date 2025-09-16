@@ -27,7 +27,6 @@ class BoardGame:
         self.is_first_click = True
 
     def init_board(self):
-
         mines_placed = 0
         while mines_placed < self.total_mines:
             x = random.randint(0, config.GRID_COLS - 1)
@@ -56,8 +55,55 @@ class BoardGame:
         if x-1 >= 0 and y+1 < config.GRID_COLS:
             self.board[x-1][y+1].adjacent_mines += 1
 
-    def reveal(self, click_pos_x, click_pos_y):
+    def reveal(self, pos,click_pos_x=None, click_pos_y=None):
+        if pos != None:# set variables
+            click_pos_x = pos[0]
+            click_pos_y = pos[1]
+
+        relative_x = click_pos_x - (config.GRID_POS_X)  # calc position in grid
+        relative_y = click_pos_y - (config.GRID_POS_Y)
+        col = relative_x // config.CELL_SIZE  # which column
+        row = relative_y // config.CELL_SIZE  # which row
+
+        if (0 <= relative_x <= config.GRID_COLS * config.CELL_SIZE) and ( 0 <= relative_y <= config.GRID_ROWS * config.CELL_SIZE): #is it on the board
+            if self.is_first_click==True: #first click initialize board
+                self.handle_first_click(row,col)
+                print('First click:',row,col)
+                return
+
+            clicked_cell=self.board[row][col]
+            print("Cell clicked:", row,col, "Mine?",clicked_cell.is_mine)
+            if clicked_cell.is_mine:
+                self.phase="loss"
+                self.reveal_all_mines()
+                return
+            if clicked_cell.adjacent_mines > 0: #is a number
+                print("Cell is number",row,col,":", clicked_cell.adjacent_mines)
+                clicked_cell.is_revealed=True
+            else:
+                self.flood_reveal(row, col)
+        else:
+            print("Not on Board")
         return
+
+    def flood_reveal(self, row,col):
+        if not (0 <= row < config.GRID_ROWS and 0 <= col < config.GRID_COLS): #make sure the cell is in the grid
+            return
+        cell = self.board[row][col]
+        if cell.is_flag or cell.is_revealed: #if flag or reveal you cant reveal
+            return
+
+        cell.is_revealed=True# passes so reveal
+        print("Cell revealed: ", row,col)
+
+        if cell.adjacent_mines > 0: #stop if neighbor mine
+            return
+
+        for dr in (-1, 0, 1): #
+            for dc in (-1, 0, 1):
+                if dr == 0 and dc == 0:
+                    continue
+                self.flood_reveal(row + dr, col + dc)
 
     def toggle_flag(self, click_pos_x, click_pos_y):
         """Toggle a flag on a covered cell given x and y coordinates"""
