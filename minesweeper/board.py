@@ -2,7 +2,7 @@
 # Contain the two main classes for the game:
 # 1. Board: Represents the game board and handles the logic for intializing the board, revealing cells, placing flags, and checking for wins/losses.
 # 2. Cell: Represents a single cell on the board, including its state (covered, uncovered, flagged) and the number of adjacent mines.
-# Authors: Michael Buckendahl, C. Cooper
+# Authors: Michael Buckendahl, C. Cooper, Cole Charpentier
 # Creation Date: 9/4/2025
 
 import config
@@ -60,7 +60,32 @@ class BoardGame:
         return
 
     def toggle_flag(self, click_pos_x, click_pos_y):
-        return
+        """Toggle a flag on a covered cell given x and y coordinates"""
+
+        # Only handle flags while the game is active
+        if self.phase != "playing":
+            return
+
+        # Ensure click maps inside the grid
+        if not (0 <= click_pos_y < self.rows and 0 <= click_pos_x < self.cols):
+            return
+
+        # Access target cell
+        cell = self.board[click_pos_y][click_pos_x]
+
+        # Ignore revealed cells
+        if cell.is_revealed:
+            return
+
+        # Toggle flag status
+        if cell.is_flag:
+            # If flagged remove the flag and decrement counter
+            cell.is_flag = False
+            self.used_flags = max(0, self.used_flags - 1)
+        else:
+            if self.used_flags < self.total_mines:
+                cell.is_flag = True
+                self.used_flags += 1
 
     def check_win(self):
         """Check if the player has won (revealed all non-mine cells)"""
