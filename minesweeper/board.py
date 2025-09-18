@@ -72,6 +72,8 @@ class BoardGame:
         else:
             self.flood_reveal(row, col)
 
+        self.check_win()
+
     def flood_reveal(self, row,col):
         if not (0 <= row < config.GRID_ROWS and 0 <= col < config.GRID_COLS): #make sure the cell is in the grid
             return
