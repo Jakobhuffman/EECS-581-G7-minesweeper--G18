@@ -20,6 +20,7 @@ manager = pygame_gui.UIManager((config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
 board: BoardGame = BoardGame()
 text_box, start_button = draw_welcome(manager, screen)
 
+wasBadInput: bool = False
 
 running=True
 while running:
@@ -39,6 +40,7 @@ while running:
 
                 # If the count is within the mine bounds, start the game
                 if(config.MIN_MINES <= mineCount <= config.MAX_MINES):
+                    wasBadInput = False
                     print("Start clicked. Mines:", str(mineCount))
                     board = BoardGame()
                     board.total_mines = mineCount
@@ -46,8 +48,10 @@ while running:
                     text_box.hide()
                     start_button.hide()
                 else:
+                    wasBadInput = True
                     print(f"Bad mine count: {mineCount}")
             except: # If it couldn't be converted to an int, print an error
+                wasBadInput = True
                 print("Bad mine count:", text_box.get_text())
 
         # If the mouse was clicked
@@ -97,7 +101,7 @@ while running:
 
     manager.update(dt)
     if (board.phase == 'ready'):
-        draw_welcome(manager, screen, True)
+        draw_welcome(manager, screen, wasBadInput, True)
 
     if (board.phase == 'playing' or board.phase == "won" or board.phase == "lost"):
         screen.fill((0, 0, 0)) # This will be the call to draw_board

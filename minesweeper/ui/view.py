@@ -4,12 +4,23 @@
 
 import pygame
 import pygame_gui
-from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y
-    
+from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT
+
 from minesweeper.board import BoardGame
 
 
-def draw_welcome(manager, screen, text_only=False):
+def draw_welcome(manager: pygame_gui.UIManager, screen: pygame.Surface, wasBadInput: bool = False, text_only: bool = False) -> tuple[pygame_gui.elements.UITextEntryBox, pygame_gui.elements.UIButton] | None:
+    """Draws the games' welcome screen, which allows the user to enter a number of mines and start the game
+
+    Args:
+        manager (pygame_gui.UIManager): The pygame_gui UIManager instance handling this
+        screen (pygame.Surface): The screen to draw on
+        wasBadInput (bool, optional): Whether the last mine count the user entered was bad. Defaults to False.
+        text_only (bool, optional): Whether to draw the screen. Defaults to False.
+
+    Returns:
+        tuple[pygame_gui.elements.UITextEntryBox, pygame_gui.elements.UIButton] | None: None if text_only, else instances of the game's mine count box and start button
+    """
     if text_only:
         screen.fill((0, 0, 0))
 
@@ -24,6 +35,10 @@ def draw_welcome(manager, screen, text_only=False):
         for i, line in enumerate(lines):
             text_surface = help_font.render(line, True, (200, 200, 200))
             screen.blit(text_surface, (50, 140 + i * 30))
+
+        # Print a message to enter 10-20 mines, or an error message if they tried to put in an invalid input
+        minesText = help_font.render(NUM_MINES_TEXT, True, (200, 200, 200)) if not wasBadInput else help_font.render(MINES_ERROR_BAD_INPUT_TEXT, True, (200, 50, 50))
+        screen.blit(minesText, (WINDOW_WIDTH // 2 - 100, 330))
 
         manager.draw_ui(screen)
 

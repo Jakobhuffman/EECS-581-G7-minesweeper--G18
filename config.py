@@ -46,10 +46,9 @@ WON_TEXT = "You won! Press 'R' to restart."
 LOST_TEXT = "You lost! Press 'R' to restart."
 TITLE = "Minesweeper"
 DESC_TEXT = "Clear the board without detonating any mines."
-NUM_MINES_TEXT = "Number of Mines(10-20):"
+NUM_MINES_TEXT = f"Number of Mines({MIN_MINES}-{MAX_MINES}):"
+MINES_ERROR_BAD_INPUT_TEXT = f"Please enter a number of mines between {MIN_MINES} and {MAX_MINES}"
 START_BUTTON_LABEL = "Start Game"
-
-
 
 # Define the positioning of elements in the window in there x and y
 GRID_POS_X = 200
