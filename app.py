@@ -13,11 +13,20 @@ from minesweeper.board import BoardGame
 
 pygame.init()
 
+# Creates the window in which the game will run
 screen=pygame.display.set_mode((config.WINDOW_WIDTH ,config.WINDOW_HEIGHT))
-pygame.display.set_caption("Minesweeper")
-clock=pygame.time.Clock()
+pygame.display.set_caption("Minesweeper") # simple window title
+clock=pygame.time.Clock() # sets up a clock to manage how fast the screen updates
+
+# Sets up the pygame_gui UIManager which will handle UI elements that we use to get
+# the mine count and create a button to start the game
 manager = pygame_gui.UIManager((config.WINDOW_WIDTH, config.WINDOW_HEIGHT))
+
 board: BoardGame = BoardGame()
+
+# The draw_welcome function has two modes, one to draw the screen and one to create the UI
+# elements. Here we call it to create the UI elements and get references to them. We do this outside
+# the main loop so that we only create them once.
 text_box, start_button = draw_welcome(manager, screen)
 
 wasBadInput: bool = False
@@ -30,6 +39,10 @@ while running:
             running=False
             break
 
+        # This is a call to the UIManager to handle any UI events for the elements it is managing
+        # (the text box and button in this case). Note that we are not assigning the result of this call
+        # to anything, as we don't need to. This is a side-effect call, it just processes the event and
+        # updates the managers internal state.
         manager.process_events(event)
 
         # If the start button was clicked
@@ -45,6 +58,9 @@ while running:
                     board = BoardGame()
                     board.total_mines = mineCount
                     board.phase = 'playing'
+
+                    # The UI elements are a little different than the normal pygame drawing functions, they
+                    # persists even if we draw a new screen. So here we hide them when the game starts.
                     text_box.hide()
                     start_button.hide()
                 else:
