@@ -15,18 +15,23 @@ class Cell:
         self.is_flag = False
         self.is_mine = False
         self.can_be_mine = True
-        self.adjacent_mines = 0
+        self.adjacent_mines = 0 # to be calculated later after board is initialized
 
 class BoardGame:
     def __init__(self):
         self.board = [[Cell() for _ in range(config.GRID_COLS)] for _ in range(config.GRID_ROWS)]
-        self.total_mines = 0
+        self.total_mines = 0 # to be set later when the user gives us a value
         self.used_flags = 0
         self.phase = 'ready'
-        self.flags_remaining = config.MAX_MINES
+        self.flags_remaining = 0 # to be calculated as total_mines - used_flags
         self.is_first_click = True
 
     def init_board(self):
+        """Randomly place mines on the board and calculate adjacent mine counts"""
+
+        # This places mine randomly on the board.
+        # This loops till all the bombs are placed, it is not a for loop because if a randomly
+        # selected cell is already a mine it will not place a new one and try again.
         mines_placed = 0
         while mines_placed < self.total_mines:
             x = random.randint(0, config.GRID_COLS - 1)
@@ -38,6 +43,9 @@ class BoardGame:
                 mines_placed += 1
 
     def update_adjacent_mines(self, x, y):
+        """Update the adjacent mine counts for all neighboring cells"""
+
+        # Go through each neighbor and increment its adjacent mine count
         if x+1 < config.GRID_ROWS:
             self.board[x+1][y].adjacent_mines += 1
         if x-1 >= 0:
@@ -149,6 +157,7 @@ class BoardGame:
     
     def handle_first_click(self, row: int, column: int):
         """Generates the minesweeper board such that the given cell is not a mine.
+           This ensures that the first click is always safe.
 
         Args:
             cell (Cell): The cell that was clicked on.
