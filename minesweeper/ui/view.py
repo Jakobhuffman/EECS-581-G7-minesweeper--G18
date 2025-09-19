@@ -4,7 +4,7 @@
 
 import pygame
 import pygame_gui
-from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT
+from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT, WON_TEXT, LOST_TEXT
 
 from minesweeper.board import BoardGame
 
@@ -100,6 +100,24 @@ def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: Boa
     screen.blit(flags_text, (FLAGS_REMAINING_X, FLAGS_REMAINING_Y)) 
 
     manager.draw_ui(screen)
+
+    message_font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
+    message_y = GRID_POS_Y + len(board.board) * CELL_SIZE + 20 
+
+    if board.phase == "playing":
+        lines = HELP_TEXT.split('\n')
+        for i, line in enumerate(lines):
+            help_text_surface = message_font.render(line, True, (200, 200, 200))
+            screen.blit(help_text_surface, (50, message_y + i * 30))
+
+    elif board.phase == "lost":
+        lost_text_surface = message_font.render(LOST_TEXT, True, (255, 0, 0))
+        screen.blit(lost_text_surface, ((WINDOW_WIDTH - lost_text_surface.get_width()) // 2, message_y))
+
+    elif board.phase == "won":
+        won_text_surface = message_font.render(WON_TEXT, True, (0, 255, 0))
+        screen.blit(won_text_surface, ((WINDOW_WIDTH - won_text_surface.get_width()) // 2, message_y))
+
 
 
 def get_number_color(number: int):
