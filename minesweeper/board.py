@@ -66,16 +66,13 @@ class BoardGame:
     def reveal(self, col, row):
         if self.is_first_click==True: #first click initialize board
             self.handle_first_click(row, col)
-            print('First click:',row,col)
 
         clicked_cell=self.board[row][col]
-        print("Cell clicked:", row,col, "Mine?",clicked_cell.is_mine)
         if clicked_cell.is_mine:
             self.phase="lost"
             self.reveal_all_mines()
             return
         if clicked_cell.adjacent_mines > 0: #is a number
-            print("Cell is number",row,col,":", clicked_cell.adjacent_mines)
             clicked_cell.is_revealed=True
         else:
             self.flood_reveal(row, col)
@@ -90,7 +87,6 @@ class BoardGame:
             return
 
         cell.is_revealed=True# passes so reveal
-        print("Cell revealed: ", row,col)
 
         if cell.adjacent_mines > 0: #stop if neighbor mine
             return
