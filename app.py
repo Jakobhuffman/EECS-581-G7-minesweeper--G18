@@ -54,7 +54,6 @@ while running:
                 # If the count is within the mine bounds, start the game
                 if(config.MIN_MINES <= mineCount <= config.MAX_MINES):
                     wasBadInput = False
-                    print("Start clicked. Mines:", str(mineCount))
                     board = BoardGame()
                     board.total_mines = mineCount
                     board.phase = 'playing'
@@ -65,11 +64,8 @@ while running:
                     start_button.hide()
                 else:
                     wasBadInput = True
-                    print(f"Bad mine count: {mineCount}")
             except: # If it couldn't be converted to an int, print an error
                 wasBadInput = True
-                print("Bad mine count:", text_box.get_text())
-
         # If the mouse was clicked
         if event.type == pygame.MOUSEBUTTONDOWN:
             
@@ -88,7 +84,6 @@ while running:
             if cellX < 0 or cellX >= config.GRID_COLS or cellY < 0 or cellY >= config.GRID_ROWS:
                 continue
 
-            print(f"Clicked on cell {cellX}, {cellY}")
 
             # If it was left clicked, reveal the cell
             if event.button == 1:
@@ -107,7 +102,6 @@ while running:
                 board = BoardGame()
                 board.total_mines = mineCount
                 board.phase = "playing"
-                print(f"Restarted game with {mineCount} mines.")
             
             # If the game is over and they press escape, go back to the welcome screen
             elif event.key == pygame.K_ESCAPE and (board.phase == "won" or board.phase == "lost"):
