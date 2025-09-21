@@ -63,26 +63,26 @@ class BoardGame:
         if x-1 >= 0 and y+1 < config.GRID_COLS:
             self.board[x-1][y+1].adjacent_mines += 1
 
-    def reveal(self, col, row):
-        if self.is_first_click==True: #first click initialize board
+    def reveal(self, col, row): #reveals a cell
+        if self.is_first_click==True: #first click initialize board and handle first click if so
             self.handle_first_click(row, col)
 
-        clicked_cell=self.board[row][col]
-        if clicked_cell.is_mine:
+        clicked_cell=self.board[row][col] # gets the cell
+        if clicked_cell.is_mine: #if a mine then lose game and reveal all mines
             self.phase="lost"
             self.reveal_all_mines()
             return
-        if clicked_cell.adjacent_mines > 0: #is a number
+        if clicked_cell.adjacent_mines > 0: #is a number reveal it
             clicked_cell.is_revealed=True
-        else:
+        else: #if passes all others, start flood reveal since its an empty spot
             self.flood_reveal(row, col)
 
         self.check_win()
 
-    def flood_reveal(self, row,col):
+    def flood_reveal(self, row,col): # reveals the empty spots
         if not (0 <= row < config.GRID_ROWS and 0 <= col < config.GRID_COLS): #make sure the cell is in the grid
             return
-        cell = self.board[row][col]
+        cell = self.board[row][col] # grab cell
         if cell.is_flag or cell.is_revealed: #if flag or reveal you cant reveal
             return
 
@@ -91,7 +91,7 @@ class BoardGame:
         if cell.adjacent_mines > 0: #stop if neighbor mine
             return
 
-        for dr in (-1, 0, 1): #
+        for dr in (-1, 0, 1): #otherwise continues revealing
             for dc in (-1, 0, 1):
                 if dr == 0 and dc == 0:
                     continue
