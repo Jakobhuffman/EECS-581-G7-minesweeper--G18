@@ -1,5 +1,7 @@
 # app.py
 # Controls the execution flow of the game
+# Inputs: Accepts mouse/keyboard inputs through a GUI; no other inputs
+# Outputs: None
 # Authors: Michael Buckendahl, C. Cooper, Blake J
 # Creation Date: 08/25/2025
 
@@ -29,6 +31,7 @@ board: BoardGame = BoardGame()
 # the main loop so that we only create them once.
 text_box, start_button = draw_welcome(manager, screen)
 
+# Whether the last text the player entered in the bomb number box was invalid
 wasBadInput: bool = False
 
 running=True
@@ -83,7 +86,6 @@ while running:
             # If the click was outside the cell grid, ignore it
             if cellX < 0 or cellX >= config.GRID_COLS or cellY < 0 or cellY >= config.GRID_ROWS:
                 continue
-
 
             # If it was left clicked, reveal the cell
             if event.button == 1:

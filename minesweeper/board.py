@@ -2,6 +2,8 @@
 # Contain the two main classes for the game:
 # 1. Board: Represents the game board and handles the logic for intializing the board, revealing cells, placing flags, and checking for wins/losses.
 # 2. Cell: Represents a single cell on the board, including its state (covered, uncovered, flagged) and the number of adjacent mines.
+# Inputs: None
+# Outputs: None
 # Authors: Michael Buckendahl, C. Cooper, Cole Charpentier
 # Creation Date: 9/4/2025
 
@@ -10,6 +12,9 @@ import random
 
 
 class Cell:
+    """Represents a cell in the minesweeper game
+    """
+
     def __init__(self):
         self.is_revealed = False
         self.is_flag = False
@@ -18,6 +23,9 @@ class Cell:
         self.adjacent_mines = 0 # to be calculated later after board is initialized
 
 class BoardGame:
+    """Represents the board in the minesweeper game
+    """
+
     def __init__(self):
         self.board = [[Cell() for _ in range(config.GRID_COLS)] for _ in range(config.GRID_ROWS)]
         self.total_mines = 0 # to be set later when the user gives us a value
