@@ -8,7 +8,7 @@
 import pygame
 import pygame_gui
 from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT, WON_TEXT, LOST_TEXT
-
+from config import AI_TEXT, AI_BUTTON_EASY, AI_BUTTON_MEDIUM, AI_BUTTON_HARD, AI_TEXT_X, AI_BUTTON_NONE, AI_TEXT_Y, AI_BUTTON_Y, AI_EASY_X, AI_MEDIUM_X, AI_HARD_X, AI_NONE_X
 from minesweeper.board import BoardGame
 
 
@@ -44,25 +44,54 @@ def draw_welcome(manager: pygame_gui.UIManager, screen: pygame.Surface, wasBadIn
 
         # Print a message to enter 10-20 mines, or an error message if they tried to put in an invalid input
         minesText = help_font.render(NUM_MINES_TEXT, True, (200, 200, 200)) if not wasBadInput else help_font.render(MINES_ERROR_BAD_INPUT_TEXT, True, (200, 50, 50))
-        screen.blit(minesText, (WINDOW_WIDTH // 2 - 100, 330))
+        screen.blit(minesText, (WINDOW_WIDTH // 2 - minesText.get_width() // 2, 250))
 
         manager.draw_ui(screen)
 
     else:
         # Generate the bomb input box 
         textbox = pygame_gui.elements.UITextEntryLine(
-            relative_rect=pygame.Rect((WINDOW_WIDTH // 2 - 100, 350), (200, 30)),
+            relative_rect=pygame.Rect((WINDOW_WIDTH // 2 - 100, 280), (200, 30)),
             manager=manager
         )
 
-        # Generate the start game button
-        start_button = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((WINDOW_WIDTH // 2 - 50, 400), (100, 40)),
-            text='Start Game',
-            manager=manager
-        )
+        # The start button is now handled by draw_ai_selection
+        return textbox, None
 
-        return textbox, start_button
+def draw_ai_selection(manager: pygame_gui.UIManager) -> tuple:
+    """Draws the AI difficulty selection buttons.
+
+    Args:
+        manager (pygame_gui.UIManager): The pygame_gui UIManager instance.
+
+    Returns:
+        tuple: Instances of the AI difficulty buttons.
+    """
+    # AI selection text
+    ai_text_box = pygame_gui.elements.UITextBox(
+        html_text=AI_TEXT,
+        relative_rect=pygame.Rect((0, AI_TEXT_Y - 20), (WINDOW_WIDTH, 30)),
+        manager=manager,
+        object_id='#ai_text'
+    )
+    no_ai_button = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect((AI_NONE_X, AI_BUTTON_Y), (100, 40)),
+        text=AI_BUTTON_NONE, manager=manager)
+    easy_button = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect((AI_EASY_X, AI_BUTTON_Y), (100, 40)),
+        text=AI_BUTTON_EASY, manager=manager)
+    medium_button = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect((AI_MEDIUM_X, AI_BUTTON_Y), (100, 40)),
+        text=AI_BUTTON_MEDIUM, manager=manager)
+    hard_button = pygame_gui.elements.UIButton(
+        relative_rect=pygame.Rect((AI_HARD_X, AI_BUTTON_Y), (100, 40)),
+        text=AI_BUTTON_HARD, manager=manager)
+    
+    # The old start button is now the "No AI" button
+    start_button = no_ai_button
+
+    return ai_text_box, start_button, easy_button, medium_button, hard_button
+
 
 from config import CELL_SIZE, COLOR_1_NEAR_MINE, COLOR_2_NEAR_MINE, COLOR_3_NEAR_MINE, COLOR_4_NEAR_MINE,COLOR_5_NEAR_MINE, COLOR_6_NEAR_MINE, COLOR_7_NEAR_MINE,COLOR_8_NEAR_MINE,COLOR_CELL_COVERED,COLOR_CELL_FLAGGED,COLOR_CELL_UNCOVERED,COLOR_CELL_MINE,COLOR_GRID_LINES
 
@@ -129,6 +158,11 @@ def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: Boa
     # If the game is in progress, display the help text
     if board.phase == "playing":
         lines = HELP_TEXT.split('\n')
+        for i, line in enumerate(lines):
+            help_text_surface = message_font.render(line, True, (200, 200, 200))
+            screen.blit(help_text_surface, (50, message_y + i * 30))
+    elif board.phase == "ai":
+        lines = "Player's turn. ".split('\n') + HELP_TEXT.split('\n')
         for i, line in enumerate(lines):
             help_text_surface = message_font.render(line, True, (200, 200, 200))
             screen.blit(help_text_surface, (50, message_y + i * 30))

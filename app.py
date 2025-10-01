@@ -9,8 +9,9 @@ import pygame
 import pygame_gui
 import config
 import sys
-from minesweeper.ui.view import draw_welcome, draw_board
+from minesweeper.ui.view import draw_welcome, draw_board, draw_ai_selection
 from minesweeper.board import BoardGame
+from minesweeper.ai_solver import AISolver
 
 
 pygame.init()
@@ -29,7 +30,14 @@ board: BoardGame = BoardGame()
 # The draw_welcome function has two modes, one to draw the screen and one to create the UI
 # elements. Here we call it to create the UI elements and get references to them. We do this outside
 # the main loop so that we only create them once.
-text_box, start_button = draw_welcome(manager, screen)
+text_box, _ = draw_welcome(manager, screen, False, False)
+ai_text, start_button, easy_button, medium_button, hard_button = draw_ai_selection(manager)
+ai_buttons = {easy_button: 'easy', medium_button: 'medium', hard_button: 'hard', start_button: None}
+all_welcome_elements = [text_box, ai_text, start_button, easy_button, medium_button, hard_button]
+ai_solver: AISolver = None
+selected_button = None
+player_turn = True
+ai_move_timer = 0
 
 # Whether the last text the player entered in the bomb number box was invalid
 wasBadInput: bool = False
@@ -47,24 +55,37 @@ while running:
         # to anything, as we don't need to. This is a side-effect call, it just processes the event and
         # updates the managers internal state.
         manager.process_events(event)
-
-        # If the start button was clicked
-        if event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == start_button:
+        
+        # If a UI button was pressed
+        if event.type == pygame_gui.UI_BUTTON_PRESSED:
             # Try to get the mine count from the text box and start the game
             try:
                 mineCount = int(text_box.get_text())
-
-                # If the count is within the mine bounds, start the game
-                if(config.MIN_MINES <= mineCount <= config.MAX_MINES):
+                if config.MIN_MINES <= mineCount <= config.MAX_MINES:
                     wasBadInput = False
-                    board = BoardGame()
-                    board.total_mines = mineCount
-                    board.phase = 'playing'
+                    # Update button visuals for selection
+                    if selected_button:
+                        selected_button.unselect()
+                    selected_button = event.ui_element
+                    selected_button.select()
 
-                    # The UI elements are a little different than the normal pygame drawing functions, they
-                    # persists even if we draw a new screen. So here we hide them when the game starts.
-                    text_box.hide()
-                    start_button.hide()
+                    if event.ui_element in ai_buttons:
+                        difficulty = ai_buttons[event.ui_element]
+                        board = BoardGame()
+                        board.total_mines = mineCount
+                        player_turn = True
+
+                        if difficulty:
+                            board.phase = 'ai'
+                            ai_solver = AISolver(board, difficulty)
+                        else:
+                            board.phase = 'playing'
+                            ai_solver = None
+                        
+                        for element in all_welcome_elements:
+                            element.hide()
+                        if selected_button:
+                            selected_button.unselect() # Deselect for next time menu is shown
                 else:
                     wasBadInput = True
             except: # If it couldn't be converted to an int, print an error
@@ -72,8 +93,8 @@ while running:
         # If the mouse was clicked
         if event.type == pygame.MOUSEBUTTONDOWN:
             
-            # If we aren't playing, ignore the click
-            if board.phase != "playing":
+            # If we aren't in a player-controlled phase, ignore the click
+            if board.phase not in ["playing", "ai"] or (board.phase == 'ai' and not player_turn):
                 continue
 
             # Get the cell position of the click
@@ -90,6 +111,8 @@ while running:
             # If it was left clicked, reveal the cell
             if event.button == 1:
                 board.reveal(cellX, cellY)
+                if board.phase == 'ai':
+                    player_turn = False # AI's turn now
 
             # If it was right clicked, toggle the flag of the cell
             if event.button == 3:
@@ -97,25 +120,48 @@ while running:
 
         # If a key was pressed
         if event.type == pygame.KEYDOWN:
-            # If the pressed key was R and the game is being played
-            if event.key == pygame.K_r and (board.phase == "playing" or board.phase == "won" or board.phase == "lost"):
+            # If the pressed key was R and the game is over or being played
+            if event.key == pygame.K_r and (board.phase in ["playing", "won", "lost", "ai"]):
                 # Restart the game
                 mineCount = board.total_mines
+                is_ai_game = ai_solver is not None
+                difficulty = ai_solver.difficulty if is_ai_game else None
+
                 board = BoardGame()
                 board.total_mines = mineCount
-                board.phase = "playing"
-            
+                player_turn = True
+
+                if is_ai_game:
+                    board.phase = 'ai'
+                    ai_solver = AISolver(board, difficulty)
+                else:
+                    board.phase = 'playing'
+                    ai_solver = None
             # If the game is over and they press escape, go back to the welcome screen
-            elif event.key == pygame.K_ESCAPE and (board.phase == "won" or board.phase == "lost"):
+            elif event.key == pygame.K_ESCAPE and (board.phase in ["won", "lost"]):
                 board.phase = "ready"
-                text_box.show()
-                start_button.show()
+                player_turn = True
+                ai_solver = None
+                for element in all_welcome_elements:
+                    element.show()
+                if selected_button:
+                    selected_button.unselect()
 
     manager.update(dt)
+
+    if board.phase == 'ai' and not player_turn and board.phase not in ['won', 'lost']:
+        ai_move_timer += dt
+        if ai_move_timer > 0.5: # Add a small delay for the AI move
+            if ai_solver:
+                ai_solver.make_move()
+            player_turn = True # Player's turn again
+            ai_move_timer = 0
+
     if (board.phase == 'ready'):
+        # Redraw welcome screen but don't create new elements
         draw_welcome(manager, screen, wasBadInput, True)
 
-    if (board.phase == 'playing' or board.phase == "won" or board.phase == "lost"):
+    if (board.phase in ['playing', 'won', 'lost', 'ai']):
         screen.fill((0, 0, 0)) # This will be the call to draw_board
         draw_board(manager, screen, board)
 

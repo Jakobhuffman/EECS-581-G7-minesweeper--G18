@@ -52,6 +52,13 @@ NUM_MINES_TEXT = f"Number of Mines({MIN_MINES}-{MAX_MINES}):"
 MINES_ERROR_BAD_INPUT_TEXT = f"Please enter a number of mines between {MIN_MINES} and {MAX_MINES}"
 START_BUTTON_LABEL = "Start Game"
 
+# AI configuration
+AI_TEXT = "Select AI Difficulty:"
+AI_BUTTON_EASY = "Easy"
+AI_BUTTON_MEDIUM = "Medium"
+AI_BUTTON_HARD = "Hard"
+AI_BUTTON_NONE = "No AI"
+
 # Define the positioning of elements in the window in there x and y
 GRID_POS_X = 200
 GRID_POS_Y = 100
@@ -69,3 +76,10 @@ MINES_TEXT_X = WINDOW_WIDTH // 2
 MINES_TEXT_Y = 220
 START_BUTTON_X = WINDOW_WIDTH // 2
 START_BUTTON_Y = 300
+AI_TEXT_X = WINDOW_WIDTH // 2
+AI_TEXT_Y = 350
+AI_BUTTON_Y = 400
+AI_EASY_X = WINDOW_WIDTH // 2 - 110
+AI_MEDIUM_X = WINDOW_WIDTH // 2
+AI_HARD_X = WINDOW_WIDTH // 2 + 110
+AI_NONE_X = WINDOW_WIDTH // 2 - 220

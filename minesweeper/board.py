@@ -77,10 +77,10 @@ class BoardGame:
 
         clicked_cell=self.board[row][col] # gets the cell
         if clicked_cell.is_mine: #if a mine then lose game and reveal all mines
-            self.phase="lost"
             self.reveal_all_mines()
+            self.phase = "lost" # Set phase after revealing mines
             return
-        if clicked_cell.adjacent_mines > 0: #is a number reveal it
+        if clicked_cell.adjacent_mines > 0 and not clicked_cell.is_revealed: #is a number reveal it
             clicked_cell.is_revealed=True
         else: #if passes all others, start flood reveal since its an empty spot
             self.flood_reveal(row, col)
@@ -109,7 +109,7 @@ class BoardGame:
         """Toggle a flag on a covered cell given x and y coordinates"""
 
         # Only handle flags while the game is active
-        if self.phase != "playing":
+        if self.phase not in ["playing", "ai"]:
             return
 
         # Ensure click maps inside the grid
@@ -137,7 +137,7 @@ class BoardGame:
         """Check if the player has won (revealed all non-mine cells)"""
 
         # Only check for a win if the game is being played
-        if self.phase != "playing":
+        if self.phase not in ["playing", "ai"]:
             return
 
         # Iterate through each cell
