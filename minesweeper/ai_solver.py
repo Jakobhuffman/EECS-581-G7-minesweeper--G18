@@ -53,7 +53,8 @@ class AISolver:
         
         if hidden_cells:
             row, col = random.choice(hidden_cells)
-            self.board.reveal(col, row)
+            # Board.reveal expects (row, col)
+            self.board.reveal(row, col)
             return ('reveal', (row, col))
         return None
 
@@ -86,10 +87,10 @@ class AISolver:
         if move:
             action, (row, col) = move
             if action == 'flag':
-                self.board.toggle_flag(col, row)
+                self.board.toggle_flag(row, col)
                 return ('flag', (row, col))
             elif action == 'reveal':
-                self.board.reveal(col, row)
+                self.board.reveal(row, col)
                 return ('reveal', (row, col))
         # If no logical move, make a random one
         return self.easy_move()
@@ -101,10 +102,10 @@ class AISolver:
         if move:
             action, (row, col) = move
             if action == 'flag':
-                self.board.toggle_flag(col, row)
+                self.board.toggle_flag(row, col)
                 return ('flag', (row, col))
             elif action == 'reveal':
-                self.board.reveal(col, row)
+                self.board.reveal(row, col)
                 return ('reveal', (row, col))
 
         # 1-2-1 Pattern (Horizontal)
@@ -114,21 +115,23 @@ class AISolver:
                 if c1.is_revealed and c2.is_revealed and c3.is_revealed and \
                    c1.adjacent_mines == 1 and c2.adjacent_mines == 2 and c3.adjacent_mines == 1:
                     # Check for hidden neighbors above or below
-                    for offset in [-1, 1]:
+                    for offset in (-1, 1):
                         nr = r + offset
                         if 0 <= nr < config.GRID_ROWS:
-                            nc1, nc2, nc3 = self.board.board[nr][c], self.board.board[nr][c+1], self.board.board[nr][c+2]
+                            nc1 = self.board.board[nr][c]
+                            nc2 = self.board.board[nr][c+1]
+                            nc3 = self.board.board[nr][c+2]
                             if not nc1.is_revealed and not nc2.is_revealed and not nc3.is_revealed:
                                 # Flag outer
                                 if not nc1.is_flag:
-                                    self.board.toggle_flag(c, nr)
+                                    self.board.toggle_flag(nr, c)
                                     return ('flag', (nr, c))
                                 if not nc3.is_flag:
-                                    self.board.toggle_flag(c + 2, nr)
+                                    self.board.toggle_flag(nr, c + 2)
                                     return ('flag', (nr, c + 2))
                                 # Reveal inner
                                 if not nc2.is_flag:
-                                    self.board.reveal(c + 1, nr)
+                                    self.board.reveal(nr, c + 1)
                                     return ('reveal', (nr, c + 1))
 
         # 1-2-1 Pattern (Vertical)
@@ -138,21 +141,23 @@ class AISolver:
                 if c1.is_revealed and c2.is_revealed and c3.is_revealed and \
                    c1.adjacent_mines == 1 and c2.adjacent_mines == 2 and c3.adjacent_mines == 1:
                     # Check for hidden neighbors left or right
-                    for offset in [-1, 1]:
+                    for offset in (-1, 1):
                         nc = c + offset
                         if 0 <= nc < config.GRID_COLS:
-                            nc1, nc2, nc3 = self.board.board[r][nc], self.board.board[r+1][nc], self.board.board[r+2][nc]
+                            nc1 = self.board.board[r][nc]
+                            nc2 = self.board.board[r+1][nc]
+                            nc3 = self.board.board[r+2][nc]
                             if not nc1.is_revealed and not nc2.is_revealed and not nc3.is_revealed:
                                 # Flag outer
                                 if not nc1.is_flag:
-                                    self.board.toggle_flag(nc, r)
+                                    self.board.toggle_flag(r, nc)
                                     return ('flag', (r, nc))
                                 if not nc3.is_flag:
-                                    self.board.toggle_flag(nc, r + 2)
+                                    self.board.toggle_flag(r + 2, nc)
                                     return ('flag', (r + 2, nc))
                                 # Reveal inner
                                 if not nc2.is_flag:
-                                    self.board.reveal(nc, r + 1)
+                                    self.board.reveal(r + 1, nc)
                                     return ('reveal', (r + 1, nc))
 
         # Fallback to random move
