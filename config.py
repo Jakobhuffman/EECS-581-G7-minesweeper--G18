@@ -9,8 +9,8 @@
 FPS = 60
 
 # Define the window dimensions
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH = 1000
+WINDOW_HEIGHT = 800
 
 # Define what font and size we will use across the application
 FONT_NAME = "Arial"
@@ -83,3 +83,43 @@ AI_EASY_X = WINDOW_WIDTH // 2 - 110
 AI_MEDIUM_X = WINDOW_WIDTH // 2
 AI_HARD_X = WINDOW_WIDTH // 2 + 110
 AI_NONE_X = WINDOW_WIDTH // 2 - 220
+
+
+def set_difficulty(difficulty: str) -> None:
+	"""Set the game difficulty and update grid size / mine range / cell size.
+
+	This function exists so the UI can call config.set_difficulty(...) without
+	raising an AttributeError. It updates some configuration values in-place.
+
+	Args:
+		difficulty: One of 'easy', 'normal', or 'hard'. Unknown values default to 'normal'.
+	"""
+	global GRID_ROWS, GRID_COLS, MIN_MINES, MAX_MINES, CELL_SIZE, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT, CURRENT_DIFFICULTY
+
+	difficulty = (difficulty or '').lower()
+	CURRENT_DIFFICULTY = difficulty
+
+	if difficulty == 'easy':
+		GRID_ROWS = 8
+		GRID_COLS = 8
+		MIN_MINES = 5
+		MAX_MINES = 15
+		CELL_SIZE = 50
+	elif difficulty == 'hard':
+		GRID_ROWS = 16
+		GRID_COLS = 16
+		MIN_MINES = 20
+		MAX_MINES = 60
+		CELL_SIZE = 30
+	else:  # normal / fallback
+		GRID_ROWS = 10
+		GRID_COLS = 10
+		MIN_MINES = 10
+		MAX_MINES = 20
+		CELL_SIZE = 40
+
+	# Update related text constants so modules that import config after this call
+	# will see the updated ranges. Note: modules that imported the previous
+	# values with `from config import ...` won't automatically update.
+	NUM_MINES_TEXT = f"Number of Mines({MIN_MINES}-{MAX_MINES}):"
+	MINES_ERROR_BAD_INPUT_TEXT = f"Please enter a number of mines between {MIN_MINES} and {MAX_MINES}"
