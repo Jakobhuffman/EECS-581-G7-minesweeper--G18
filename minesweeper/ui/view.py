@@ -7,7 +7,8 @@
 
 import pygame
 import pygame_gui
-from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, CELL_SIZE, GRID_POS_X, GRID_POS_Y, FLAGS_REMAINING_X, FLAGS_REMAINING_Y, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT, WON_TEXT, LOST_TEXT
+import config
+from config import WINDOW_WIDTH, FONT_NAME, FONT_SIZE, HELP_TEXT, WON_TEXT, LOST_TEXT
 from config import AI_TEXT, AI_BUTTON_EASY, AI_BUTTON_MEDIUM, AI_BUTTON_HARD, AI_TEXT_X, AI_BUTTON_NONE, AI_TEXT_Y, AI_BUTTON_Y, AI_EASY_X, AI_MEDIUM_X, AI_HARD_X, AI_NONE_X
 from minesweeper.board import BoardGame
 
@@ -42,12 +43,14 @@ def draw_welcome(manager: pygame_gui.UIManager, screen: pygame.Surface, wasBadIn
             text_surface = help_font.render(line, True, (200, 200, 200))
             screen.blit(text_surface, (50, 140 + i * 30))
 
-        # Print a message to enter 10-20 mines, or an error message if they tried to put in an invalid input
-        minesText = help_font.render(NUM_MINES_TEXT, True, (200, 200, 200)) if not wasBadInput else help_font.render(MINES_ERROR_BAD_INPUT_TEXT, True, (200, 50, 50))
+        # Print a message to enter the configured mine range, or an error message if they tried an invalid input
+        mines_label = config.NUM_MINES_TEXT
+        mines_error_label = config.MINES_ERROR_BAD_INPUT_TEXT
+        minesText = help_font.render(mines_label, True, (200, 200, 200)) if not wasBadInput else help_font.render(mines_error_label, True, (200, 50, 50))
         screen.blit(minesText, (WINDOW_WIDTH // 2 - minesText.get_width() // 2, 250))
 
         manager.draw_ui(screen)
-
+        return None
     else:
         # Generate the bomb input box 
         textbox = pygame_gui.elements.UITextEntryLine(
@@ -93,7 +96,7 @@ def draw_ai_selection(manager: pygame_gui.UIManager) -> tuple:
     return ai_text_box, start_button, easy_button, medium_button, hard_button
 
 
-from config import CELL_SIZE, COLOR_1_NEAR_MINE, COLOR_2_NEAR_MINE, COLOR_3_NEAR_MINE, COLOR_4_NEAR_MINE,COLOR_5_NEAR_MINE, COLOR_6_NEAR_MINE, COLOR_7_NEAR_MINE,COLOR_8_NEAR_MINE,COLOR_CELL_COVERED,COLOR_CELL_FLAGGED,COLOR_CELL_UNCOVERED,COLOR_CELL_MINE,COLOR_GRID_LINES
+from config import COLOR_1_NEAR_MINE, COLOR_2_NEAR_MINE, COLOR_3_NEAR_MINE, COLOR_4_NEAR_MINE, COLOR_5_NEAR_MINE, COLOR_6_NEAR_MINE, COLOR_7_NEAR_MINE, COLOR_8_NEAR_MINE, COLOR_CELL_COVERED, COLOR_CELL_FLAGGED, COLOR_CELL_UNCOVERED, COLOR_CELL_MINE, COLOR_GRID_LINES
 
 def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: BoardGame):
     """Draws the minesweeper game board, reflecting the game state of the given BoardGame object
@@ -111,10 +114,10 @@ def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: Boa
         for x, cell in enumerate(row):
             # Get the rectangle where the cell will be drawn
             rect = pygame.Rect(
-                GRID_POS_X + x * CELL_SIZE,
-                GRID_POS_Y + y * CELL_SIZE,
-                CELL_SIZE,
-                CELL_SIZE
+                config.GRID_POS_X + x * config.CELL_SIZE,
+                config.GRID_POS_Y + y * config.CELL_SIZE,
+                config.CELL_SIZE,
+                config.CELL_SIZE
             )
 
             if not cell.is_revealed:
@@ -147,13 +150,13 @@ def draw_board(manager: pygame_gui.UIManager, screen: pygame.Surface, board: Boa
     # Draw the number of flags remaining in the upper right corner
     flags_left = board.total_mines - board.used_flags
     flags_text = font.render(f"Flags Left: {flags_left}", True, (255, 255, 255))
-    screen.blit(flags_text, (FLAGS_REMAINING_X, FLAGS_REMAINING_Y)) 
+    screen.blit(flags_text, (config.FLAGS_REMAINING_X, config.FLAGS_REMAINING_Y)) 
 
     manager.draw_ui(screen)
 
     # Get the font and position of the status message
     message_font = pygame.font.SysFont(FONT_NAME, FONT_SIZE)
-    message_y = GRID_POS_Y + len(board.board) * CELL_SIZE + 20 
+    message_y = config.GRID_POS_Y + len(board.board) * config.CELL_SIZE + 20 
 
     # If the game is in progress, display the help text
     if board.phase == "playing":
