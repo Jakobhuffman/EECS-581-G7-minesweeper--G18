@@ -37,45 +37,35 @@ class BoardGame:
     def init_board(self):
         """Randomly place mines on the board and calculate adjacent mine counts"""
 
-        # This places mine randomly on the board.
-        # This loops till all the bombs are placed, it is not a for loop because if a randomly
-        # selected cell is already a mine it will not place a new one and try again.
+        # Place mines randomly on the board. Use (row, col) ordering everywhere
         mines_placed = 0
-        while mines_placed < self.total_mines:
-            x = random.randint(0, config.GRID_COLS - 1)
-            y = random.randint(0, config.GRID_ROWS - 1)
-            if self.board[x][y].can_be_mine:
-                self.board[x][y].is_mine = True
-                self.board[x][y].can_be_mine = False
-                self.update_adjacent_mines(x, y)
+        attempts = 0
+        max_attempts = self.total_mines * 10 + 100
+        while mines_placed < self.total_mines and attempts < max_attempts:
+            row = random.randint(0, config.GRID_ROWS - 1)
+            col = random.randint(0, config.GRID_COLS - 1)
+            if self.board[row][col].can_be_mine and not self.board[row][col].is_mine:
+                self.board[row][col].is_mine = True
+                self.board[row][col].can_be_mine = False
+                self.update_adjacent_mines(row, col)
                 mines_placed += 1
+            attempts += 1
 
-    def update_adjacent_mines(self, x, y):
+    def update_adjacent_mines(self, row, col):
         """Update the adjacent mine counts for all neighboring cells"""
+        for dr in (-1, 0, 1):
+            for dc in (-1, 0, 1):
+                if dr == 0 and dc == 0:
+                    continue
+                nr, nc = row + dr, col + dc
+                if 0 <= nr < config.GRID_ROWS and 0 <= nc < config.GRID_COLS:
+                    self.board[nr][nc].adjacent_mines += 1
 
-        # Go through each neighbor and increment its adjacent mine count
-        if x+1 < config.GRID_ROWS:
-            self.board[x+1][y].adjacent_mines += 1
-        if x-1 >= 0:
-            self.board[x-1][y].adjacent_mines += 1
-        if y+1 < config.GRID_COLS:
-            self.board[x][y+1].adjacent_mines += 1
-        if y-1 >= 0:
-            self.board[x][y-1].adjacent_mines += 1
-        if x+1 < config.GRID_ROWS and y+1 < config.GRID_COLS:
-            self.board[x+1][y+1].adjacent_mines += 1
-        if x-1 >= 0 and y-1 >= 0:
-            self.board[x-1][y-1].adjacent_mines += 1
-        if x+1 < config.GRID_ROWS and y-1 >= 0:
-            self.board[x+1][y-1].adjacent_mines += 1
-        if x-1 >= 0 and y+1 < config.GRID_COLS:
-            self.board[x-1][y+1].adjacent_mines += 1
-
-    def reveal(self, col, row): #reveals a cell
-        if self.is_first_click==True: #first click initialize board and handle first click if so
+    def reveal(self, row, col): #reveals a cell (row, col)
+        if self.is_first_click: # first click initialize board and handle first click if so
             self.handle_first_click(row, col)
 
-        clicked_cell=self.board[row][col] # gets the cell
+        clicked_cell = self.board[row][col] # gets the cell
         if clicked_cell.is_mine: #if a mine then lose game and reveal all mines
             self.reveal_all_mines()
             self.phase = "lost" # Set phase after revealing mines
@@ -87,7 +77,7 @@ class BoardGame:
 
         self.check_win()
 
-    def flood_reveal(self, row,col): # reveals the empty spots
+    def flood_reveal(self, row, col): # reveals the empty spots
         if not (0 <= row < config.GRID_ROWS and 0 <= col < config.GRID_COLS): #make sure the cell is in the grid
             return
         cell = self.board[row][col] # grab cell
@@ -105,19 +95,19 @@ class BoardGame:
                     continue
                 self.flood_reveal(row + dr, col + dc)
 
-    def toggle_flag(self, click_pos_x, click_pos_y):
-        """Toggle a flag on a covered cell given x and y coordinates"""
+    def toggle_flag(self, row, col):
+        """Toggle a flag on a covered cell given (row, col) coordinates"""
 
         # Only handle flags while the game is active
         if self.phase not in ["playing", "ai"]:
             return
 
         # Ensure click maps inside the grid
-        if not (0 <= click_pos_y < config.GRID_ROWS and 0 <= click_pos_x < config.GRID_COLS):
+        if not (0 <= row < config.GRID_ROWS and 0 <= col < config.GRID_COLS):
             return
 
         # Access target cell
-        cell = self.board[click_pos_y][click_pos_x]
+        cell = self.board[row][col]
 
         # Ignore revealed cells
         if cell.is_revealed:
