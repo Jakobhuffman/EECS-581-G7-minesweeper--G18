@@ -2,64 +2,62 @@
 # Contains the logic for the AI solver.
 # Inputs: Game board state
 # Outputs: AI move (reveal or flag a cell)
-# Author(s): Gemini Code Assist
+# Author: Jakob Huffman
 # Creation Date: 10/27/2023
 
 import random
 from minesweeper.board import BoardGame
 import config
 
+# Class that contains the logic for the AI solver
 class AISolver:
-    """
-    An AI solver for the Minesweeper game with different difficulty levels.
-    """
     def __init__(self, board: BoardGame, difficulty: str):
         self.board = board
         self.difficulty = difficulty
 
+    # Makes a move based on the difficulty
     def make_move(self):
-        """
-        Makes a move based on the selected difficulty.
-        Returns a tuple (action, (row, col)) or None if no move is made.
-        """
+    # If the difficulty is easy, make an easy move
         if self.difficulty == 'easy':
             return self.easy_move()
+        # If the difficulty is medium, make a medium move
         elif self.difficulty == 'medium':
             return self.medium_move()
+        # If the difficulty is hard, make a hard move
         elif self.difficulty == 'hard':
             return self.hard_move()
         return None
 
+    # Gets the neighbors of a cell
     def get_neighbors(self, row, col):
-        """Returns a list of neighbor coordinates for a given cell."""
+    # List of neighbors
         neighbors = []
         for dr in [-1, 0, 1]:
             for dc in [-1, 0, 1]:
                 if dr == 0 and dc == 0:
                     continue
                 r, c = row + dr, col + dc
+        # Check if the neighbor is in the grid
                 if 0 <= r < config.GRID_ROWS and 0 <= c < config.GRID_COLS:
                     neighbors.append((r, c))
         return neighbors
 
+    # Makes a random move on a hidden, un-flagged cell
     def easy_move(self):
-        """Makes a random move on a hidden, un-flagged cell."""
         hidden_cells = []
         for r in range(config.GRID_ROWS):
             for c in range(config.GRID_COLS):
                 cell = self.board.board[r][c]
                 if not cell.is_revealed and not cell.is_flag:
                     hidden_cells.append((r, c))
-        
         if hidden_cells:
             row, col = random.choice(hidden_cells)
-            # Board.reveal expects (row, col)
             self.board.reveal(row, col)
             return ('reveal', (row, col))
         return None
 
     def _find_basic_move(self):
-        """Finds a move using basic logic without executing it."""
+    # Looks for basic logical moves (flagging or revealing based on adjacent mine counts)
         for r in range(config.GRID_ROWS):
             for c in range(config.GRID_COLS):
                 cell = self.board.board[r][c]
@@ -82,7 +80,7 @@ class AISolver:
         return None
 
     def medium_move(self):
-        """Applies basic logic, otherwise makes a random move."""
+    # Applies basic logic, otherwise makes a random move.
         move = self._find_basic_move()
         if move:
             action, (row, col) = move
@@ -96,7 +94,7 @@ class AISolver:
         return self.easy_move()
 
     def hard_move(self):
-        """Applies medium logic + 1-2-1 pattern, otherwise random."""
+    # Applies medium logic + 1-2-1 pattern, otherwise random.
         # Try basic logic first
         move = self._find_basic_move()
         if move:
