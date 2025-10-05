@@ -85,15 +85,8 @@ AI_HARD_X = WINDOW_WIDTH // 2 + 110
 AI_NONE_X = WINDOW_WIDTH // 2 - 220
 
 
-def set_difficulty(difficulty: str) -> None:
-	"""Set the game difficulty and update grid size / mine range / cell size.
-
-	This function exists so the UI can call config.set_difficulty(...) without
-	raising an AttributeError. It updates some configuration values in-place.
-
-	Args:
-		difficulty: One of 'easy', 'normal', or 'hard'. Unknown values default to 'normal'.
-	"""
+def set_difficulty(difficulty: str) -> None: #Changes game settings according to the selected difficulty
+	
 	global GRID_ROWS, GRID_COLS, MIN_MINES, MAX_MINES, CELL_SIZE, NUM_MINES_TEXT, MINES_ERROR_BAD_INPUT_TEXT, CURRENT_DIFFICULTY
 
 	difficulty = (difficulty or '').lower()
